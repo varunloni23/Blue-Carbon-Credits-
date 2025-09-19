@@ -1,0 +1,28 @@
+{
+  "name": "blue-carbon-mrv-system",
+  "version": "1.0.0",
+  "description": "Complete Blue Carbon MRV System with Blockchain Integration",
+  "scripts": {
+    "dev": "concurrently \"npm run backend\" \"npm run mobile\"",
+    "dev:all": "concurrently \"npm run backend\" \"npm run mobile\" \"npm run admin\"",
+    "backend": "cd backend && node server.js",
+    "mobile": "cd mobile-app && ulimit -n 65536 && npm start",
+    "admin": "cd admin-dashboard && npm start",
+    "install:all": "npm install && cd backend && npm install && cd ../mobile-app && npm install && cd ../admin-dashboard && npm install",
+    "build:mobile": "cd mobile-app && npm run build:android",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  },
+  "keywords": [
+    "blockchain",
+    "carbon-credits", 
+    "mrv",
+    "blue-carbon",
+    "react-native",
+    "nodejs"
+  ],
+  "author": "Blue Carbon MRV Team",
+  "license": "MIT"
+}

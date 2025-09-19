@@ -1,0 +1,28 @@
+{
+  "name": "blockchain",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "hardhat test",
+    "compile": "hardhat compile",
+    "deploy:amoy": "hardhat run scripts/deploy.cjs --network amoy",
+    "deploy:local": "hardhat run scripts/deploy.cjs --network hardhat",
+    "check-balance": "node scripts/check-amoy-balance.cjs",
+    "node": "hardhat node",
+    "server": "node real-blockchain-service.js"
+  },
+  "keywords": ["blockchain", "carbon-credits", "mrv", "blue-carbon"],
+  "author": "Blue Carbon MRV Team",
+  "license": "MIT",
+  "description": "Smart contracts for Blue Carbon MRV System",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.1.0",
+    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "chai": "^6.0.1",
+    "hardhat": "^3.0.4"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.4.0",
+    "dotenv": "^17.2.2"
+  }
+}

@@ -1,0 +1,29 @@
+Blue Carbon Project Documentation
+
+Project Name: Test Mangrove Restoration
+Location: Mumbai Coastal Area
+Date: September 17, 2025
+
+Description:
+This is a test document for IPFS upload functionality in the Blue Carbon MRV system.
+The document contains project baseline data and initial measurements.
+
+Baseline Measurements:
+- Water pH: 7.8
+- Salinity: 32 ppt
+- Temperature: 28°C
+- Dissolved Oxygen: 6.2 mg/L
+
+Restoration Activities:
+1. Mangrove seedling plantation
+2. Community engagement workshops
+3. Monitoring protocol establishment
+4. Carbon stock assessment
+
+Expected Outcomes:
+- Carbon sequestration: 150 tons CO2/year
+- Biodiversity enhancement
+- Coastal protection improvement
+- Community livelihood support
+
+This document demonstrates the IPFS upload and retrieval functionality.

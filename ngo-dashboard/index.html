@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3rd Party Verification Portal - Blue Carbon MRV</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0077be 0%, #004d7a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        
+        .logo {
+            color: #0077be;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #0077be;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: #0077be;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #005a8b;
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .error {
+            color: #e74c3c;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .success {
+            color: #27ae60;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .org-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: left;
+            display: none;
+        }
+        
+        .org-info h4 {
+            color: #0077be;
+            margin-bottom: 10px;
+        }
+        
+        .org-info p {
+            margin: 5px 0;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .demo-credentials {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .demo-credentials h4 {
+            color: #0077be;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .demo-credentials p {
+            margin: 3px 0;
+            font-size: 12px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">🌊 Blue Carbon MRV</div>
+        <div class="subtitle">3rd Party Verification Portal</div>
+        
+        <div class="demo-credentials">
+            <h4>Demo Credentials</h4>
+            <p><strong>Coastal Conservation India:</strong></p>
+            <p>Email: verification@coastalconservation.in</p>
+            <p>Password: coastal2024</p>
+            <p><strong>Blue Ocean Foundation:</strong></p>
+            <p>Email: verify@blueocean.org</p>
+            <p>Password: ocean2024</p>
+            <p><strong>Mangrove Research Institute:</strong></p>
+            <p>Email: research@mangroveresearch.org</p>
+            <p>Password: mangrove2024</p>
+        </div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Organization Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <button type="submit" class="btn" id="loginBtn">Login</button>
+            
+            <div id="message"></div>
+        </form>
+        
+        <div id="orgInfo" class="org-info"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8002';
+        
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const messageDiv = document.getElementById('message');
+            const orgInfoDiv = document.getElementById('orgInfo');
+            
+            // Disable button and show loading
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Logging in...';
+            messageDiv.innerHTML = '';
+            orgInfoDiv.style.display = 'none';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/3rd-party/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    messageDiv.innerHTML = `<div class="success">${result.message}</div>`;
+                    
+                    // Store organization data
+                    localStorage.setItem('ngo_organization', JSON.stringify(result.organization));
+                    
+                    // Show organization info
+                    const org = result.organization;
+                    orgInfoDiv.innerHTML = `
+                        <h4>${org.name}</h4>
+                        <p><strong>ID:</strong> ${org.id}</p>
+                        <p><strong>Type:</strong> ${org.type}</p>
+                        <p><strong>Specialization:</strong> ${org.specialization.join(', ')}</p>
+                        <p><strong>Location:</strong> ${org.location}</p>
+                        <p><strong>Rating:</strong> ⭐ ${org.performance.rating}/5 (${org.performance.projects_verified} projects verified)</p>
+                    `;
+                    orgInfoDiv.style.display = 'block';
+                    
+                    // Redirect to dashboard after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 2000);
+                    
+                } else {
+                    messageDiv.innerHTML = `<div class="error">${result.error || 'Login failed'}</div>`;
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                messageDiv.innerHTML = `<div class="error">Connection error. Please try again.</div>`;
+            }
+            
+            // Re-enable button
+            loginBtn.disabled = false;
+            loginBtn.textContent = 'Login';
+        });
+        
+        // Auto-fill demo credentials when clicking on them
+        document.querySelectorAll('.demo-credentials p').forEach(p => {
+            if (p.textContent.includes('Email:')) {
+                p.style.cursor = 'pointer';
+                p.addEventListener('click', () => {
+                    const email = p.textContent.split('Email: ')[1];
+                    document.getElementById('email').value = email;
+                });
+            }
+            if (p.textContent.includes('Password:')) {
+                p.style.cursor = 'pointer';
+                p.addEventListener('click', () => {
+                    const password = p.textContent.split('Password: ')[1];
+                    document.getElementById('password').value = password;
+                });
+            }
+        });
+    </script>
+</body>
+</html>

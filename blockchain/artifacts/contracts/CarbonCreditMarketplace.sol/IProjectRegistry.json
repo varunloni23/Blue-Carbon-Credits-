@@ -1,0 +1,105 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "IProjectRegistry",
+  "sourceName": "contracts/CarbonCreditMarketplace.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_projectId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getProject",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "ecosystemType",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "location",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "areaInHectares",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "projectOwner",
+          "type": "address"
+        },
+        {
+          "internalType": "address[]",
+          "name": "communityWallets",
+          "type": "address[]"
+        },
+        {
+          "internalType": "address[]",
+          "name": "verifiers",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256",
+          "name": "status",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "createdAt",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "approvedAt",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "ipfsHashMetadata",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "estimatedCarbonCredits",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalCarbonCredits",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "isActive",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
