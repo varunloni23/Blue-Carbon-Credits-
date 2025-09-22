@@ -1,7 +1,10 @@
 import React, { useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { Container, Box } from '@mui/material';
+import { Container, Box, ThemeProvider, CssBaseline } from '@mui/material';
 import { BlockchainProvider } from './contexts/BlockchainContext';
+
+// Import custom theme
+import blueCarbonTheme from './theme/blueCarbon';
 
 // Import components
 import Login from './pages/Login';
@@ -12,6 +15,8 @@ import Marketplace from './pages/Marketplace';
 import CarbonCredits from './pages/CarbonCredits';
 import PaymentDistribution from './pages/PaymentDistribution';
 import Reports from './pages/Reports';
+import ModernDashboard from './components/ModernDashboard';
+import ShadcnAdminDashboard from './components/ShadcnAdminDashboard';
 
 // Layout wrapper for authenticated routes (simplified without Navbar for now)
 const AuthenticatedLayout = ({ children }) => (
@@ -39,113 +44,130 @@ function App() {
   }, [location.pathname]);
 
   return (
-    <BlockchainProvider>
-      <Box className="App">
-        <Routes>
-          {/* Public routes */}
-          <Route path="/login" element={<Login />} />
-          
-          {/* Protected routes with layout */}
-          <Route path="/" element={
-            <ProtectedRoute>
-              <AuthenticatedLayout>
-                <SimpleDashboard />
-              </AuthenticatedLayout>
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/dashboard" element={
-            <ProtectedRoute>
-              <AuthenticatedLayout>
-                <SimpleDashboard />
-              </AuthenticatedLayout>
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/user/dashboard" element={
-            <ProtectedRoute>
-              <AuthenticatedLayout>
-                <SimpleDashboard />
-              </AuthenticatedLayout>
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/projects/create" element={
-            <ProtectedRoute>
-              <AuthenticatedLayout>
-                <ProjectCreate />
-              </AuthenticatedLayout>
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/projects" element={
-            <ProtectedRoute>
-              <AuthenticatedLayout>
-                <SimpleDashboard />
-              </AuthenticatedLayout>
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/data-collection" element={
-            <ProtectedRoute>
-              <AuthenticatedLayout>
-                <SimpleDashboard />
-              </AuthenticatedLayout>
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/verification" element={
-            <ProtectedRoute>
-              <AuthenticatedLayout>
-                <SimpleDashboard />
-              </AuthenticatedLayout>
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/marketplace" element={
-            <ProtectedRoute>
-              <AuthenticatedLayout>
-                <Marketplace />
-              </AuthenticatedLayout>
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/carbon-credits" element={
-            <ProtectedRoute>
-              <AuthenticatedLayout>
-                <CarbonCredits />
-              </AuthenticatedLayout>
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/payments" element={
-            <ProtectedRoute>
-              <AuthenticatedLayout>
-                <PaymentDistribution />
-              </AuthenticatedLayout>
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/reports" element={
-            <ProtectedRoute>
-              <AuthenticatedLayout>
-                <Reports />
-              </AuthenticatedLayout>
-            </ProtectedRoute>
-          } />
-          
-          {/* Admin routes */}
-          <Route path="/admin/dashboard" element={
-            <ProtectedRoute>
-              <AdminDashboard />
-            </ProtectedRoute>
-          } />
-          
-          {/* Fallback route */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
-      </Box>
-    </BlockchainProvider>
+    <ThemeProvider theme={blueCarbonTheme}>
+      <CssBaseline />
+      <BlockchainProvider>
+        <Box className="App">
+          <Routes>
+            {/* Public routes */}
+            <Route path="/login" element={<Login />} />
+            
+            {/* Protected routes with layout */}
+            <Route path="/" element={
+              <ProtectedRoute>
+                <AuthenticatedLayout>
+                  <SimpleDashboard />
+                </AuthenticatedLayout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <AuthenticatedLayout>
+                  <SimpleDashboard />
+                </AuthenticatedLayout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/user/dashboard" element={
+              <ProtectedRoute>
+                <AuthenticatedLayout>
+                  <SimpleDashboard />
+                </AuthenticatedLayout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/projects/create" element={
+              <ProtectedRoute>
+                <AuthenticatedLayout>
+                  <ProjectCreate />
+                </AuthenticatedLayout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/projects" element={
+              <ProtectedRoute>
+                <AuthenticatedLayout>
+                  <SimpleDashboard />
+                </AuthenticatedLayout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/data-collection" element={
+              <ProtectedRoute>
+                <AuthenticatedLayout>
+                  <SimpleDashboard />
+                </AuthenticatedLayout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/verification" element={
+              <ProtectedRoute>
+                <AuthenticatedLayout>
+                  <SimpleDashboard />
+                </AuthenticatedLayout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/marketplace" element={
+              <ProtectedRoute>
+                <AuthenticatedLayout>
+                  <Marketplace />
+                </AuthenticatedLayout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/carbon-credits" element={
+              <ProtectedRoute>
+                <AuthenticatedLayout>
+                  <CarbonCredits />
+                </AuthenticatedLayout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/payments" element={
+              <ProtectedRoute>
+                <AuthenticatedLayout>
+                  <PaymentDistribution />
+                </AuthenticatedLayout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/reports" element={
+              <ProtectedRoute>
+                <AuthenticatedLayout>
+                  <Reports />
+                </AuthenticatedLayout>
+              </ProtectedRoute>
+            } />
+            
+            {/* Admin routes */}
+            <Route path="/admin/dashboard" element={
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            } />
+            
+            {/* Modern Shadcn UI Dashboard Demo */}
+            <Route path="/modern" element={
+              <ProtectedRoute>
+                <ModernDashboard />
+              </ProtectedRoute>
+            } />
+            
+            {/* Shadcn Admin Dashboard */}
+            <Route path="/admin/modern" element={
+              <ProtectedRoute>
+                <ShadcnAdminDashboard />
+              </ProtectedRoute>
+            } />
+            
+            {/* Fallback route */}
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </Routes>
+        </Box>
+      </BlockchainProvider>
+    </ThemeProvider>
   );
 }
 

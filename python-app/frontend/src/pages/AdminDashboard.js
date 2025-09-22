@@ -179,13 +179,13 @@ const AdminDashboard = () => {
       console.log('Fetching admin data...');
       
       // Fetch admin dashboard data (includes verification scores)
-      const adminResponse = await fetch('http://localhost:8002/api/admin/dashboard');
+      const adminResponse = await fetch('https://python-backend-dqu4.onrender.com/api/admin/dashboard');
       console.log('Admin response status:', adminResponse.status);
       const adminData = await adminResponse.json();
       console.log('Admin data:', adminData);
       
       // Also fetch full project details for complete data
-      const projectsResponse = await fetch('http://localhost:8002/api/projects');
+      const projectsResponse = await fetch('https://python-backend-dqu4.onrender.com/api/projects');
       const projectsData = await projectsResponse.json();
       const allProjects = projectsData.projects || [];
       
@@ -224,7 +224,7 @@ const AdminDashboard = () => {
   const fetchVerificationData = async (projectId) => {
     try {
       console.log('Fetching verification data for project:', projectId);
-      const response = await fetch(`http://localhost:8002/api/projects/${projectId}/verification`);
+      const response = await fetch(`https://python-backend-dqu4.onrender.com/api/projects/${projectId}/verification`);
       console.log('Verification response status:', response.status);
       
       if (response.ok) {
@@ -289,7 +289,7 @@ const AdminDashboard = () => {
   const handleProjectReview = async (projectId, decision) => {
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:8002/api/admin/projects/${projectId}/review`, {
+      const response = await fetch(`https://python-backend-dqu4.onrender.com/api/admin/projects/${projectId}/review`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -496,21 +496,59 @@ const AdminDashboard = () => {
   );
 
   const renderProjectsTab = () => (
-    <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-        <Typography variant="h5">🔍 Project Management & Review</Typography>
+    <Box sx={{ p: 3 }}>
+      {/* Header Section */}
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        mb: 4,
+        p: 3,
+        bgcolor: 'white',
+        borderRadius: '16px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+        border: '1px solid #e2e8f0'
+      }}>
         <Box>
+          <Typography variant="h5" sx={{ 
+            fontWeight: 700,
+            color: '#1e293b',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1
+          }}>
+            🔍 Project Management & Review
+          </Typography>
+          <Typography variant="body2" sx={{ color: '#64748b', mt: 0.5 }}>
+            Review and approve blue carbon restoration projects
+          </Typography>
+        </Box>
+        <Box sx={{ display: 'flex', gap: 2 }}>
           <Button
             startIcon={<RefreshIcon />}
             onClick={() => { loadDashboard(); fetchAdminData(); }}
             disabled={refreshing}
-            sx={{ mr: 2 }}
+            variant="outlined"
+            sx={{
+              borderColor: '#e2e8f0',
+              color: '#64748b',
+              borderRadius: '12px',
+              textTransform: 'none',
+              fontWeight: 600
+            }}
           >
             {refreshing ? 'Refreshing...' : 'Refresh'}
           </Button>
           <Button
             startIcon={<DownloadIcon />}
-            variant="outlined"
+            variant="contained"
+            sx={{
+              bgcolor: '#0d47a1',
+              borderRadius: '12px',
+              textTransform: 'none',
+              fontWeight: 600,
+              '&:hover': { bgcolor: '#1565c0' }
+            }}
           >
             Export Data
           </Button>
@@ -518,164 +556,238 @@ const AdminDashboard = () => {
       </Box>
 
       {/* Enhanced Projects Table */}
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Project ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Ecosystem</TableCell>
-              <TableCell>Area (ha)</TableCell>
-              <TableCell>AI Score</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Submitted</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {(projects.length > 0 ? projects : dashboardData?.pending_projects || []).map((project) => (
-              <TableRow key={project.id}>
-                <TableCell>{project.id}</TableCell>
-                <TableCell>
-                  <Typography variant="body2" fontWeight="bold">
-                    {project.project_name}
-                  </Typography>
-                  <Typography variant="caption" color="textSecondary">
-                    by {project.created_by}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Chip
-                    label={project.ecosystem_type}
-                    size="small"
-                    color="primary"
-                    variant="outlined"
-                  />
-                </TableCell>
-                <TableCell>{project.area_hectares}</TableCell>
-                <TableCell>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Typography variant="body2" sx={{ mr: 1 }}>
-                      {project.verification_score || 0}/100
-                    </Typography>
-                    <LinearProgress
-                      variant="determinate"
-                      value={project.verification_score || 0}
-                      sx={{ width: 60, height: 6 }}
-                      color={project.verification_score >= 80 ? 'success' : 
-                             project.verification_score >= 60 ? 'warning' : 'error'}
-                    />
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Chip
-                    icon={getStatusIcon(project.status)}
-                    label={project.status?.replace('_', ' ').toUpperCase()}
-                    color={getStatusColor(project.status)}
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell>
-                  {new Date(project.created_at).toLocaleDateString()}
-                </TableCell>
-                <TableCell>
-                  <Tooltip title="View Details">
-                    <IconButton
-                      size="small"
-                      onClick={() => openProjectDetails(project)}
-                    >
-                      <ViewIcon />
-                    </IconButton>
-                  </Tooltip>
-                  
-                  {project.location && project.location.lat && project.location.lng && (
-                    <Tooltip title="Show in Maps">
-                      <IconButton
-                        size="small"
-                        color="secondary"
-                        onClick={() => {
-                          setSelectedProject(project);
-                          setProjectMapDialog(true);
-                        }}
-                      >
-                        <MapIcon />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-                  
-                  <Tooltip title="View IPFS Media">
-                    <IconButton
-                      size="small"
-                      color="info"
-                      onClick={() => {
-                        setSelectedProject(project);
-                        setIpfsMediaDialog(true);
-                      }}
-                    >
-                      <MediaIcon />
-                    </IconButton>
-                  </Tooltip>
-                  
-                  {(project.status === 'pending_verification' || project.status === 'requires_review' || !project.status) && (
-                    <Tooltip title="Review Project">
-                      <IconButton
-                        size="small"
-                        color="primary"
-                        onClick={() => {
-                          setSelectedProject(project);
-                          setReviewDialog(true);
-                        }}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-                  {project.ai_verification && (
-                    <Tooltip title="AI Analysis">
-                      <IconButton
-                        size="small"
-                        color="secondary"
-                        onClick={() => {
-                          setSelectedProject(project);
-                          setAiAnalysisDialog(true);
-                        }}
-                      >
-                        <SecurityIcon />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-                </TableCell>
+      <Card sx={{ 
+        borderRadius: '16px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+        border: '1px solid #e2e8f0'
+      }}>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ bgcolor: '#f8fafc' }}>
+                <TableCell sx={{ fontWeight: 700, color: '#1e293b' }}>Project ID</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: '#1e293b' }}>Name</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: '#1e293b' }}>Ecosystem</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: '#1e293b' }}>Area (ha)</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: '#1e293b' }}>AI Score</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: '#1e293b' }}>Status</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: '#1e293b' }}>Submitted</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: '#1e293b' }}>Actions</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {(projects.length > 0 ? projects : dashboardData?.pending_projects || []).map((project, index) => (
+                <TableRow 
+                  key={project.id}
+                  sx={{ 
+                    '&:hover': { 
+                      bgcolor: '#f8fafc',
+                      transform: 'scale(1.001)',
+                      transition: 'all 0.2s ease'
+                    },
+                    '&:nth-of-type(even)': { bgcolor: '#fafbfc' }
+                  }}
+                >
+                  <TableCell>
+                    <Typography variant="body2" sx={{ fontWeight: 600, color: '#0d47a1' }}>
+                      #{project.id}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Box>
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#1e293b' }}>
+                        {project.project_name}
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: '#64748b' }}>
+                        by {project.created_by}
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={project.ecosystem_type}
+                      size="small"
+                      sx={{
+                        bgcolor: '#e0f2fe',
+                        color: '#0277bd',
+                        fontWeight: 600,
+                        borderRadius: '8px'
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      {project.area_hectares}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Typography variant="body2" sx={{ mr: 1, fontWeight: 600 }}>
+                        {project.verification_score || 0}/100
+                      </Typography>
+                      <LinearProgress
+                        variant="determinate"
+                        value={project.verification_score || 0}
+                        sx={{ 
+                          width: 60, 
+                          height: 8,
+                          borderRadius: '4px',
+                          bgcolor: '#e2e8f0'
+                        }}
+                        color={project.verification_score >= 80 ? 'success' : 
+                               project.verification_score >= 60 ? 'warning' : 'error'}
+                      />
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      icon={getStatusIcon(project.status)}
+                      label={project.status?.replace('_', ' ').toUpperCase()}
+                      color={getStatusColor(project.status)}
+                      size="small"
+                      sx={{ borderRadius: '8px', fontWeight: 600 }}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" sx={{ color: '#64748b' }}>
+                      {new Date(project.created_at).toLocaleDateString()}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', gap: 0.5 }}>
+                      <Tooltip title="View Details">
+                        <IconButton
+                          size="small"
+                          onClick={() => openProjectDetails(project)}
+                          sx={{ 
+                            bgcolor: '#e3f2fd',
+                            color: '#1976d2',
+                            '&:hover': { bgcolor: '#bbdefb' }
+                          }}
+                        >
+                          <ViewIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      
+                      {project.location && project.location.lat && project.location.lng && (
+                        <Tooltip title="Show in Maps">
+                          <IconButton
+                            size="small"
+                            onClick={() => {
+                              setSelectedProject(project);
+                              setProjectMapDialog(true);
+                            }}
+                            sx={{ 
+                              bgcolor: '#fce4ec',
+                              color: '#c2185b',
+                              '&:hover': { bgcolor: '#f8bbd9' }
+                            }}
+                          >
+                            <MapIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                      
+                      <Tooltip title="View IPFS Media">
+                        <IconButton
+                          size="small"
+                          onClick={() => {
+                            setSelectedProject(project);
+                            setIpfsMediaDialog(true);
+                          }}
+                          sx={{ 
+                            bgcolor: '#e8f5e8',
+                            color: '#2e7d32',
+                            '&:hover': { bgcolor: '#c8e6c9' }
+                          }}
+                        >
+                          <MediaIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      
+                      {(project.status === 'pending_verification' || project.status === 'requires_review' || !project.status) && (
+                        <Tooltip title="Review Project">
+                          <IconButton
+                            size="small"
+                            onClick={() => {
+                              setSelectedProject(project);
+                              setReviewDialog(true);
+                            }}
+                            sx={{ 
+                              bgcolor: '#fff3e0',
+                              color: '#f57c00',
+                              '&:hover': { bgcolor: '#ffe0b2' }
+                            }}
+                          >
+                            <EditIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                      
+                      {project.ai_verification && (
+                        <Tooltip title="AI Analysis">
+                          <IconButton
+                            size="small"
+                            onClick={() => {
+                              setSelectedProject(project);
+                              setAiAnalysisDialog(true);
+                            }}
+                            sx={{ 
+                              bgcolor: '#f3e5f5',
+                              color: '#7b1fa2',
+                              '&:hover': { bgcolor: '#e1bee7' }
+                            }}
+                          >
+                            <SecurityIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Card>
 
       {/* Legacy Project Cards for backwards compatibility */}
       {dashboardData?.pending_projects?.length > 0 && (
         <Box sx={{ mt: 4 }}>
-          <Typography variant="h6" gutterBottom>
+          <Typography variant="h6" gutterBottom sx={{ fontWeight: 700, color: '#1e293b' }}>
             Legacy Projects Pending Review
           </Typography>
           <Grid container spacing={2}>
             {dashboardData.pending_projects.map((project) => (
               <Grid item xs={12} key={project.id}>
-                <Card variant="outlined">
+                <Card sx={{ 
+                  borderRadius: '12px',
+                  border: '1px solid #e2e8f0',
+                  '&:hover': { boxShadow: '0 8px 25px rgba(0,0,0,0.1)' }
+                }}>
                   <CardContent>
                     <Box display="flex" justifyContent="space-between" alignItems="center">
                       <Box>
-                        <Typography variant="h6">{project.project_name}</Typography>
-                        <Typography color="textSecondary">
+                        <Typography variant="h6" sx={{ fontWeight: 600, color: '#1e293b' }}>
+                          {project.project_name}
+                        </Typography>
+                        <Typography sx={{ color: '#64748b' }}>
                           {project.ecosystem_type} • {project.area_hectares} hectares
                         </Typography>
-                        <Typography variant="body2" sx={{ mt: 1 }}>
+                        <Typography variant="body2" sx={{ mt: 1, color: '#64748b' }}>
                           Created: {new Date(project.created_at).toLocaleDateString()}
                         </Typography>
                       </Box>
                       <Box display="flex" gap={1}>
                         <Button
                           variant="contained"
-                          color="success"
+                          sx={{
+                            bgcolor: '#059669',
+                            borderRadius: '8px',
+                            textTransform: 'none',
+                            fontWeight: 600,
+                            '&:hover': { bgcolor: '#047857' }
+                          }}
                           startIcon={<CheckCircle />}
                           onClick={() => {
                             setSelectedProject(project);
@@ -697,47 +809,110 @@ const AdminDashboard = () => {
   );
 
   const renderAnalyticsTab = () => (
-    <Box>
-      <Typography variant="h5" gutterBottom>📊 Analytics & Reports</Typography>
+    <Box sx={{ p: 3 }}>
+      {/* Header Section */}
+      <Box sx={{ 
+        p: 3,
+        bgcolor: 'white',
+        borderRadius: '16px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+        border: '1px solid #e2e8f0',
+        mb: 4
+      }}>
+        <Typography variant="h5" sx={{ 
+          fontWeight: 700,
+          color: '#1e293b',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1
+        }}>
+          📊 Analytics & Reports
+        </Typography>
+        <Typography variant="body2" sx={{ color: '#64748b', mt: 0.5 }}>
+          Comprehensive insights and metrics for blue carbon projects
+        </Typography>
+      </Box>
       
       <Grid container spacing={3}>
+        {/* Carbon Credits Overview Card */}
         <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                📈 Carbon Credits Overview
+          <Card sx={{ 
+            borderRadius: '16px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            border: '1px solid #e2e8f0',
+            background: 'linear-gradient(135deg, #0d47a1 0%, #1565c0 100%)',
+            color: 'white'
+          }}>
+            <CardContent sx={{ p: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Box sx={{ 
+                  bgcolor: 'rgba(255,255,255,0.2)',
+                  borderRadius: '12px',
+                  p: 1,
+                  mr: 2
+                }}>
+                  <Typography sx={{ fontSize: '24px' }}>📈</Typography>
+                </Box>
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  Carbon Credits Overview
+                </Typography>
+              </Box>
+              <Typography variant="h3" sx={{ fontWeight: 700, mb: 1 }}>
+                {projects.reduce((sum, p) => sum + (p.carbon_credits || 0), 0).toLocaleString()}
               </Typography>
-              <Typography variant="h3" color="primary">
-                {projects.reduce((sum, p) => sum + (p.carbon_credits || 0), 0)}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
+              <Typography variant="body2" sx={{ opacity: 0.9 }}>
                 Total tCO₂ Credits Issued
               </Typography>
             </CardContent>
           </Card>
         </Grid>
         
+        {/* Ecosystem Breakdown Card */}
         <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                🌿 Ecosystem Breakdown
-              </Typography>
+          <Card sx={{ 
+            borderRadius: '16px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            border: '1px solid #e2e8f0'
+          }}>
+            <CardContent sx={{ p: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <Box sx={{ 
+                  bgcolor: '#e8f5e8',
+                  borderRadius: '12px',
+                  p: 1,
+                  mr: 2
+                }}>
+                  <Typography sx={{ fontSize: '24px' }}>🌿</Typography>
+                </Box>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1e293b' }}>
+                  Ecosystem Breakdown
+                </Typography>
+              </Box>
               {['mangrove', 'seagrass', 'salt_marsh', 'coastal_wetland'].map((ecosystem) => {
                 const count = projects.filter(p => p.ecosystem_type === ecosystem).length;
                 const percentage = projects.length > 0 ? (count / projects.length) * 100 : 0;
                 return (
-                  <Box key={ecosystem} sx={{ mb: 2 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="body2">
+                  <Box key={ecosystem} sx={{ mb: 2.5 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#1e293b' }}>
                         {ecosystem.replace('_', ' ').toUpperCase()}
                       </Typography>
-                      <Typography variant="body2">{count}</Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#64748b' }}>
+                        {count} projects
+                      </Typography>
                     </Box>
                     <LinearProgress
                       variant="determinate"
                       value={percentage}
-                      sx={{ height: 8, borderRadius: 4 }}
+                      sx={{ 
+                        height: 8, 
+                        borderRadius: 4,
+                        bgcolor: '#e2e8f0',
+                        '& .MuiLinearProgress-bar': {
+                          bgcolor: '#0d47a1',
+                          borderRadius: 4
+                        }
+                      }}
                     />
                   </Box>
                 );
@@ -746,24 +921,74 @@ const AdminDashboard = () => {
           </Card>
         </Grid>
         
+        {/* Project Status Distribution Card */}
         <Grid item xs={12}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                📊 Project Status Distribution
-              </Typography>
+          <Card sx={{ 
+            borderRadius: '16px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            border: '1px solid #e2e8f0'
+          }}>
+            <CardContent sx={{ p: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <Box sx={{ 
+                  bgcolor: '#e3f2fd',
+                  borderRadius: '12px',
+                  p: 1,
+                  mr: 2
+                }}>
+                  <Typography sx={{ fontSize: '24px' }}>📊</Typography>
+                </Box>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1e293b' }}>
+                  Project Status Distribution
+                </Typography>
+              </Box>
               <Grid container spacing={2}>
                 {['approved', 'pending_verification', 'requires_review', 'rejected'].map((status) => {
                   const count = projects.filter(p => p.status === status).length;
+                  const statusColors = {
+                    approved: '#10b981',
+                    pending_verification: '#f59e0b',
+                    requires_review: '#ef4444',
+                    rejected: '#6b7280'
+                  };
+                  const statusBgColors = {
+                    approved: '#dcfce7',
+                    pending_verification: '#fef3c7',
+                    requires_review: '#fee2e2',
+                    rejected: '#f3f4f6'
+                  };
                   return (
                     <Grid item xs={6} sm={3} key={status}>
-                      <Card variant="outlined">
-                        <CardContent sx={{ textAlign: 'center' }}>
-                          <Typography variant="h4" color={getStatusColor(status) + '.main'}>
+                      <Card sx={{ 
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '12px',
+                        bgcolor: statusBgColors[status],
+                        '&:hover': {
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 8px 25px rgba(0,0,0,0.1)',
+                          transition: 'all 0.2s ease'
+                        }
+                      }}>
+                        <CardContent sx={{ textAlign: 'center', p: 2 }}>
+                          <Typography 
+                            variant="h4" 
+                            sx={{ 
+                              color: statusColors[status],
+                              fontWeight: 700,
+                              mb: 1
+                            }}
+                          >
                             {count}
                           </Typography>
-                          <Typography variant="body2">
-                            {status.replace('_', ' ').toUpperCase()}
+                          <Typography 
+                            variant="body2" 
+                            sx={{ 
+                              color: statusColors[status],
+                              fontWeight: 600,
+                              textTransform: 'capitalize'
+                            }}
+                          >
+                            {status.replace('_', ' ')}
                           </Typography>
                         </CardContent>
                       </Card>
@@ -960,72 +1185,166 @@ const AdminDashboard = () => {
   );
 
   return (
-    <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-      {/* Loading state */}
-      {loading && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
-          <CircularProgress size={60} />
-          <Typography variant="h6" sx={{ ml: 2 }}>Loading Admin Dashboard...</Typography>
-        </Box>
-      )}
-      
-      {/* Error state */}
-      {!loading && (!dashboardData && !projects.length) && (
-        <Alert severity="warning" sx={{ mb: 3 }}>
-          Unable to load dashboard data. Please check your connection and try again.
-          <Button variant="outlined" onClick={() => { loadDashboard(); fetchAdminData(); }} sx={{ ml: 2 }}>
-            Retry
-          </Button>
-        </Alert>
-      )}
-      
-      {/* Main dashboard content */}
-      {!loading && (
-        <>
-          <Typography variant="h3" gutterBottom>
-            🏛️ NCCR Admin Dashboard
-          </Typography>
-          <Typography variant="subtitle1" color="textSecondary" gutterBottom sx={{ mb: 4 }}>
-            National Centre for Coastal Research - Blue Carbon MRV System Administration
-          </Typography>
-
-          <Alert severity="warning" sx={{ mb: 3 }}>
-            Review and approve blue carbon restoration projects for MRV workflow
-          </Alert>
-
-          <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-            <Tabs value={activeTab} onChange={(e, newValue) => setActiveTab(newValue)}>
-              <Tab
-                icon={<DashboardIcon />}
-                label="Dashboard"
-                iconPosition="start"
-              />
-              <Tab
-                icon={<Badge badgeContent={projects.filter(p => p.status === 'requires_review' || p.status === 'pending_verification').length} color="error">
-                  <VerifiedIcon />
-                </Badge>}
-                label="Project Review"
-                iconPosition="start"
-              />
-              <Tab
-                icon={<AnalyticsIcon />}
-                label="Analytics"
-                iconPosition="start"
-              />
-              <Tab
-                icon={<MapIcon />}
-                label="Location Map"
-                iconPosition="start"
-              />
-            </Tabs>
+    <Box sx={{ bgcolor: '#f8fafc', minHeight: '100vh' }}>
+      {/* Top Navigation */}
+      <Box sx={{ 
+        bgcolor: 'white',
+        borderBottom: '1px solid rgba(0,0,0,0.08)',
+        py: 2
+      }}>
+        <Container maxWidth="xl">
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box sx={{ 
+                bgcolor: '#0d47a1',
+                borderRadius: '12px',
+                p: 1.5,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <DashboardIcon sx={{ color: 'white', fontSize: 28 }} />
+              </Box>
+              <Box>
+                <Typography variant="h5" sx={{ color: '#1e293b', fontWeight: 800 }}>
+                  NCCR Admin Dashboard
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#64748b' }}>
+                  National Centre for Coastal Research
+                </Typography>
+              </Box>
+            </Box>
+            
+            <Button
+              variant="outlined"
+              onClick={() => { loadDashboard(); fetchAdminData(); }}
+              disabled={refreshing}
+              sx={{
+                borderColor: '#e2e8f0',
+                color: '#64748b',
+                borderRadius: '10px',
+                textTransform: 'none',
+                fontWeight: 600
+              }}
+            >
+              {refreshing ? <CircularProgress size={16} sx={{ mr: 1 }} /> : null}
+              Refresh
+            </Button>
           </Box>
+        </Container>
+      </Box>
 
-          {activeTab === 0 && renderDashboardTab()}
-          {activeTab === 1 && renderProjectsTab()}
-          {activeTab === 2 && renderAnalyticsTab()}
-          {activeTab === 3 && renderMapTab()}
-        </>
-      )}
+      <Container maxWidth="xl" sx={{ py: 4 }}>
+        {/* Loading state */}
+        {loading && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
+            <CircularProgress size={60} />
+            <Typography variant="h6" sx={{ ml: 2 }}>Loading Admin Dashboard...</Typography>
+          </Box>
+        )}
+        
+        {/* Error state */}
+        {!loading && (!dashboardData && !projects.length) && (
+          <Alert 
+            severity="warning" 
+            sx={{ 
+              mb: 3,
+              borderRadius: '12px',
+              border: '1px solid #fbbf24'
+            }}
+          >
+            Unable to load dashboard data. Please check your connection and try again.
+            <Button variant="outlined" onClick={() => { loadDashboard(); fetchAdminData(); }} sx={{ ml: 2 }}>
+              Retry
+            </Button>
+          </Alert>
+        )}
+        
+        {/* Main dashboard content */}
+        {!loading && (
+          <>
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h4" sx={{ 
+                color: '#1e293b', 
+                fontWeight: 800,
+                mb: 1
+              }}>
+                Dashboard Overview
+              </Typography>
+              <Typography variant="body1" sx={{ color: '#64748b' }}>
+                Review and approve blue carbon restoration projects for MRV workflow
+              </Typography>
+            </Box>
+
+            <Box sx={{ 
+              borderBottom: '1px solid #e2e8f0', 
+              mb: 4,
+              bgcolor: 'white',
+              borderRadius: '16px 16px 0 0',
+              px: 2
+            }}>
+              <Tabs 
+                value={activeTab} 
+                onChange={(e, newValue) => setActiveTab(newValue)}
+                sx={{
+                  '& .MuiTab-root': {
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    fontSize: '16px',
+                    minHeight: '60px',
+                    borderRadius: '12px 12px 0 0',
+                    '&.Mui-selected': {
+                      color: '#0d47a1'
+                    }
+                  },
+                  '& .MuiTabs-indicator': {
+                    backgroundColor: '#0d47a1',
+                    height: '3px',
+                    borderRadius: '3px'
+                  }
+                }}
+              >
+                <Tab
+                  icon={<DashboardIcon />}
+                  label="Dashboard"
+                  iconPosition="start"
+                />
+                <Tab
+                  icon={<Badge badgeContent={projects.filter(p => p.status === 'requires_review' || p.status === 'pending_verification').length} color="error">
+                    <VerifiedIcon />
+                  </Badge>}
+                  label="Project Review"
+                  iconPosition="start"
+                />
+                <Tab
+                  icon={<AnalyticsIcon />}
+                  label="Analytics"
+                  iconPosition="start"
+                />
+                <Tab
+                  icon={<MapIcon />}
+                  label="Location Map"
+                  iconPosition="start"
+                />
+              </Tabs>
+            </Box>
+
+            <Box sx={{ 
+              bgcolor: 'white',
+              borderRadius: '0 0 16px 16px',
+              p: 3,
+              mb: 3,
+              border: '1px solid #e2e8f0',
+              borderTop: 'none'
+            }}>
+              {activeTab === 0 && renderDashboardTab()}
+              {activeTab === 1 && renderProjectsTab()}
+              {activeTab === 2 && renderAnalyticsTab()}
+              {activeTab === 3 && renderMapTab()}
+            </Box>
+          </>
+        )}
+      </Container>
 
       {/* Project Map Dialog */}
       <Dialog
@@ -1451,7 +1770,7 @@ const AdminDashboard = () => {
         projectId={selectedProject?.id}
         projectName={selectedProject?.project_name}
       />
-    </Container>
+    </Box>
   );
 };
 

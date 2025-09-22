@@ -77,7 +77,7 @@ const UserProjects = () => {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch('http://localhost:8002/api/projects');
+      const response = await fetch('https://python-backend-dqu4.onrender.com/api/projects');
       const data = await response.json();
       
       if (data.status === 'success') {
@@ -107,7 +107,7 @@ const UserProjects = () => {
 
   const handleCreateProject = async () => {
     try {
-      const response = await fetch('http://localhost:8002/api/projects', {
+      const response = await fetch('https://python-backend-dqu4.onrender.com/api/projects', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

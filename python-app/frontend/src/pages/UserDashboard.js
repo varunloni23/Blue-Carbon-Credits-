@@ -61,7 +61,7 @@ const UserDashboard = () => {
   const fetchUserData = async () => {
     try {
       // Fetch user's projects
-      const response = await fetch('http://localhost:8002/api/projects');
+      const response = await fetch('https://python-backend-dqu4.onrender.com/api/projects');
       const data = await response.json();
       
       if (data.status === 'success') {
@@ -139,14 +139,24 @@ const UserDashboard = () => {
   }
 
   return (
-    <Box>
+    <Box sx={{ bgcolor: '#f8fafc', minHeight: '100vh' }}>
       {/* Header */}
-      <AppBar position="static">
-        <Toolbar>
-          <NatureIcon sx={{ mr: 2 }} />
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Blue Carbon MRV - User Portal
-          </Typography>
+      <AppBar 
+        position="static" 
+        elevation={0}
+        sx={{ 
+          bgcolor: 'white',
+          borderBottom: '1px solid rgba(0,0,0,0.08)'
+        }}
+      >
+        <Toolbar sx={{ py: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <NatureIcon sx={{ color: '#0d47a1', fontSize: 32 }} />
+            <Typography variant="h5" sx={{ color: '#1e293b', fontWeight: 700 }}>
+              Blue Carbon MRV
+            </Typography>
+          </Box>
+          <Box sx={{ flexGrow: 1 }} />
           <IconButton
             size="large"
             edge="end"
@@ -154,7 +164,11 @@ const UserDashboard = () => {
             aria-controls="menu-appbar"
             aria-haspopup="true"
             onClick={handleMenuOpen}
-            color="inherit"
+            sx={{ 
+              bgcolor: '#f1f5f9',
+              color: '#64748b',
+              '&:hover': { bgcolor: '#e2e8f0' }
+            }}
           >
             <AccountIcon />
           </IconButton>
@@ -172,111 +186,295 @@ const UserDashboard = () => {
             }}
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
+            PaperProps={{
+              sx: {
+                borderRadius: '12px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                mt: 1
+              }
+            }}
           >
-            <MenuItem onClick={() => navigate('/user/projects')}>My Projects</MenuItem>
-            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            <MenuItem onClick={() => navigate('/user/projects')} sx={{ borderRadius: '8px', mx: 1 }}>
+              My Projects
+            </MenuItem>
+            <MenuItem onClick={handleLogout} sx={{ borderRadius: '8px', mx: 1 }}>
+              Logout
+            </MenuItem>
           </Menu>
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+      <Container maxWidth="xl" sx={{ py: 4 }}>
         {/* Welcome Section */}
-        <Paper elevation={3} sx={{ p: 3, mb: 4, background: 'linear-gradient(45deg, #e3f2fd, #f3e5f5)' }}>
-          <Grid container alignItems="center" spacing={3}>
-            <Grid item>
-              <Avatar sx={{ width: 60, height: 60, bgcolor: 'primary.main' }}>
-                {user?.name?.charAt(0)}
-              </Avatar>
-            </Grid>
-            <Grid item xs>
-              <Typography variant="h4" gutterBottom>
-                Welcome back, {user?.name}!
-              </Typography>
-              <Typography variant="subtitle1" color="textSecondary">
-                {user?.organization} • Community Project Manager
-              </Typography>
-              <Chip 
-                label={`${dashboardStats.total_projects} Active Projects`} 
-                color="primary" 
-                sx={{ mt: 1 }} 
-              />
-            </Grid>
-            <Grid item>
-              <Button
-                variant="contained"
-                size="large"
-                startIcon={<AddIcon />}
-                onClick={() => navigate('/user/projects/create')}
-                sx={{ mr: 2 }}
-              >
-                New Project
-              </Button>
-              <Button
-                variant="outlined"
-                size="large"
-                startIcon={<ViewIcon />}
-                onClick={() => navigate('/user/projects')}
-              >
-                View Projects
-              </Button>
-            </Grid>
-          </Grid>
-        </Paper>
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" sx={{ 
+            color: '#1e293b', 
+            fontWeight: 800,
+            mb: 1
+          }}>
+            Welcome back, {user?.name}!
+          </Typography>
+          <Typography variant="body1" sx={{ color: '#64748b', mb: 3 }}>
+            {user?.organization} • Community Project Manager
+          </Typography>
+          
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            <Button
+              variant="contained"
+              size="large"
+              startIcon={<AddIcon />}
+              onClick={() => navigate('/user/projects/create')}
+              sx={{
+                bgcolor: '#0d47a1',
+                borderRadius: '12px',
+                px: 3,
+                py: 1.5,
+                textTransform: 'none',
+                fontWeight: 600,
+                '&:hover': { bgcolor: '#1565c0' }
+              }}
+            >
+              New Project
+            </Button>
+            <Button
+              variant="outlined"
+              size="large"
+              startIcon={<ViewIcon />}
+              onClick={() => navigate('/user/projects')}
+              sx={{
+                borderColor: '#e2e8f0',
+                color: '#64748b',
+                borderRadius: '12px',
+                px: 3,
+                py: 1.5,
+                textTransform: 'none',
+                fontWeight: 600,
+                '&:hover': { 
+                  borderColor: '#0d47a1',
+                  color: '#0d47a1',
+                  bgcolor: 'transparent'
+                }
+              }}
+            >
+              View Projects
+            </Button>
+          </Box>
+        </Box>
 
         {/* Statistics Cards */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid item xs={12} sm={6} md={3}>
-            <Card>
-              <CardContent sx={{ textAlign: 'center' }}>
-                <NatureIcon sx={{ fontSize: 40, color: 'primary.main', mb: 1 }} />
-                <Typography variant="h4" color="primary">
+            <Card sx={{ 
+              bgcolor: 'white',
+              borderRadius: '16px',
+              border: '1px solid #e2e8f0',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+              '&:hover': {
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                transform: 'translateY(-2px)'
+              },
+              transition: 'all 0.2s ease'
+            }}>
+              <CardContent sx={{ p: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                  <Typography variant="h6" sx={{ color: '#64748b', fontSize: '14px', fontWeight: 600 }}>
+                    Total Projects
+                  </Typography>
+                  <Box sx={{ 
+                    bgcolor: '#dbeafe', 
+                    borderRadius: '8px', 
+                    p: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <NatureIcon sx={{ color: '#3b82f6', fontSize: 20 }} />
+                  </Box>
+                </Box>
+                <Typography variant="h3" sx={{ 
+                  color: '#1e293b', 
+                  fontWeight: 800,
+                  mb: 1
+                }}>
                   {dashboardStats.total_projects}
                 </Typography>
-                <Typography color="textSecondary">
-                  Total Projects
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Chip 
+                    label="+12%" 
+                    size="small" 
+                    sx={{ 
+                      bgcolor: '#dcfce7', 
+                      color: '#166534',
+                      fontSize: '12px',
+                      fontWeight: 600
+                    }} 
+                  />
+                  <Typography variant="caption" sx={{ color: '#64748b' }}>
+                    vs last month
+                  </Typography>
+                </Box>
               </CardContent>
             </Card>
           </Grid>
           
           <Grid item xs={12} sm={6} md={3}>
-            <Card>
-              <CardContent sx={{ textAlign: 'center' }}>
-                <CheckCircleIcon sx={{ fontSize: 40, color: 'success.main', mb: 1 }} />
-                <Typography variant="h4" color="success.main">
+            <Card sx={{ 
+              bgcolor: 'white',
+              borderRadius: '16px',
+              border: '1px solid #e2e8f0',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+              '&:hover': {
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                transform: 'translateY(-2px)'
+              },
+              transition: 'all 0.2s ease'
+            }}>
+              <CardContent sx={{ p: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                  <Typography variant="h6" sx={{ color: '#64748b', fontSize: '14px', fontWeight: 600 }}>
+                    Approved Projects
+                  </Typography>
+                  <Box sx={{ 
+                    bgcolor: '#dcfce7', 
+                    borderRadius: '8px', 
+                    p: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <CheckCircleIcon sx={{ color: '#16a34a', fontSize: 20 }} />
+                  </Box>
+                </Box>
+                <Typography variant="h3" sx={{ 
+                  color: '#1e293b', 
+                  fontWeight: 800,
+                  mb: 1
+                }}>
                   {dashboardStats.approved_projects}
                 </Typography>
-                <Typography color="textSecondary">
-                  Approved Projects
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Chip 
+                    label="+8%" 
+                    size="small" 
+                    sx={{ 
+                      bgcolor: '#dcfce7', 
+                      color: '#166534',
+                      fontSize: '12px',
+                      fontWeight: 600
+                    }} 
+                  />
+                  <Typography variant="caption" sx={{ color: '#64748b' }}>
+                    approval rate
+                  </Typography>
+                </Box>
               </CardContent>
             </Card>
           </Grid>
           
           <Grid item xs={12} sm={6} md={3}>
-            <Card>
-              <CardContent sx={{ textAlign: 'center' }}>
-                <ScheduleIcon sx={{ fontSize: 40, color: 'warning.main', mb: 1 }} />
-                <Typography variant="h4" color="warning.main">
+            <Card sx={{ 
+              bgcolor: 'white',
+              borderRadius: '16px',
+              border: '1px solid #e2e8f0',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+              '&:hover': {
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                transform: 'translateY(-2px)'
+              },
+              transition: 'all 0.2s ease'
+            }}>
+              <CardContent sx={{ p: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                  <Typography variant="h6" sx={{ color: '#64748b', fontSize: '14px', fontWeight: 600 }}>
+                    Pending Review
+                  </Typography>
+                  <Box sx={{ 
+                    bgcolor: '#fef3c7', 
+                    borderRadius: '8px', 
+                    p: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <ScheduleIcon sx={{ color: '#d97706', fontSize: 20 }} />
+                  </Box>
+                </Box>
+                <Typography variant="h3" sx={{ 
+                  color: '#1e293b', 
+                  fontWeight: 800,
+                  mb: 1
+                }}>
                   {dashboardStats.pending_projects}
                 </Typography>
-                <Typography color="textSecondary">
-                  Pending Review
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Chip 
+                    label="2 new" 
+                    size="small" 
+                    sx={{ 
+                      bgcolor: '#fef3c7', 
+                      color: '#92400e',
+                      fontSize: '12px',
+                      fontWeight: 600
+                    }} 
+                  />
+                  <Typography variant="caption" sx={{ color: '#64748b' }}>
+                    this week
+                  </Typography>
+                </Box>
               </CardContent>
             </Card>
           </Grid>
           
           <Grid item xs={12} sm={6} md={3}>
-            <Card>
-              <CardContent sx={{ textAlign: 'center' }}>
-                <TrendingUpIcon sx={{ fontSize: 40, color: 'info.main', mb: 1 }} />
-                <Typography variant="h4" color="info.main">
+            <Card sx={{ 
+              bgcolor: 'white',
+              borderRadius: '16px',
+              border: '1px solid #e2e8f0',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+              '&:hover': {
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                transform: 'translateY(-2px)'
+              },
+              transition: 'all 0.2s ease'
+            }}>
+              <CardContent sx={{ p: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                  <Typography variant="h6" sx={{ color: '#64748b', fontSize: '14px', fontWeight: 600 }}>
+                    Carbon Credits
+                  </Typography>
+                  <Box sx={{ 
+                    bgcolor: '#f0fdf4', 
+                    borderRadius: '8px', 
+                    p: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <TrendingUpIcon sx={{ color: '#16a34a', fontSize: 20 }} />
+                  </Box>
+                </Box>
+                <Typography variant="h3" sx={{ 
+                  color: '#1e293b', 
+                  fontWeight: 800,
+                  mb: 1
+                }}>
                   {dashboardStats.total_credits}
                 </Typography>
-                <Typography color="textSecondary">
-                  Carbon Credits
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Chip 
+                    label="+24%" 
+                    size="small" 
+                    sx={{ 
+                      bgcolor: '#dcfce7', 
+                      color: '#166534',
+                      fontSize: '12px',
+                      fontWeight: 600
+                    }} 
+                  />
+                  <Typography variant="caption" sx={{ color: '#64748b' }}>
+                    earned
+                  </Typography>
+                </Box>
               </CardContent>
             </Card>
           </Grid>
@@ -285,66 +483,113 @@ const UserDashboard = () => {
         <Grid container spacing={4}>
           {/* Recent Projects */}
           <Grid item xs={12} md={8}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  📊 Your Recent Projects
-                </Typography>
+            <Card sx={{ 
+              bgcolor: 'white',
+              borderRadius: '16px',
+              border: '1px solid #e2e8f0',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.08)'
+            }}>
+              <CardContent sx={{ p: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'between', mb: 3 }}>
+                  <Typography variant="h6" sx={{ color: '#1e293b', fontWeight: 700 }}>
+                    Recent Projects
+                  </Typography>
+                  <Button 
+                    variant="text" 
+                    size="small"
+                    onClick={() => navigate('/user/projects')}
+                    sx={{ color: '#0d47a1', fontWeight: 600 }}
+                  >
+                    View All
+                  </Button>
+                </Box>
                 
                 {userProjects.length === 0 ? (
-                  <Alert severity="info">
-                    No projects found. <Button onClick={() => navigate('/user/projects/create')}>Create your first project</Button>
-                  </Alert>
+                  <Box sx={{ textAlign: 'center', py: 4 }}>
+                    <Typography variant="body1" sx={{ color: '#64748b', mb: 2 }}>
+                      No projects found
+                    </Typography>
+                    <Button 
+                      variant="contained"
+                      onClick={() => navigate('/user/projects/create')}
+                      sx={{
+                        bgcolor: '#0d47a1',
+                        borderRadius: '10px',
+                        textTransform: 'none',
+                        fontWeight: 600
+                      }}
+                    >
+                      Create your first project
+                    </Button>
+                  </Box>
                 ) : (
-                  <List>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                     {userProjects.slice(0, 5).map((project) => (
-                      <ListItem 
+                      <Box 
                         key={project.id}
                         sx={{ 
-                          border: '1px solid #e0e0e0', 
-                          borderRadius: 2, 
-                          mb: 1,
-                          '&:hover': { bgcolor: '#f5f5f5' }
+                          border: '1px solid #e2e8f0',
+                          borderRadius: '12px',
+                          p: 2,
+                          '&:hover': { 
+                            bgcolor: '#f8fafc',
+                            borderColor: '#0d47a1',
+                            transform: 'translateY(-1px)'
+                          },
+                          transition: 'all 0.2s ease'
                         }}
                       >
-                        <ListItemIcon>
-                          {getProjectStatusIcon(project.status)}
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={project.project_name}
-                          secondary={
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <Box sx={{ 
+                              bgcolor: project.status === 'approved' ? '#dcfce7' : project.status === 'pending_verification' ? '#fef3c7' : '#fee2e2',
+                              borderRadius: '8px',
+                              p: 1,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center'
+                            }}>
+                              {getProjectStatusIcon(project.status)}
+                            </Box>
                             <Box>
-                              <Typography variant="body2" color="textSecondary">
+                              <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1e293b' }}>
+                                {project.project_name}
+                              </Typography>
+                              <Typography variant="body2" sx={{ color: '#64748b' }}>
                                 {project.ecosystem_type} • {project.area_hectares} hectares
                               </Typography>
-                              <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                                <Chip
-                                  label={project.status?.replace('_', ' ').toUpperCase()}
-                                  color={getProjectStatusColor(project.status)}
-                                  size="small"
-                                />
-                                {project.verification_score && (
-                                  <Chip
-                                    label={`AI Score: ${project.verification_score}/100`}
-                                    variant="outlined"
-                                    size="small"
-                                    sx={{ ml: 1 }}
-                                  />
-                                )}
-                              </Box>
                             </Box>
-                          }
-                        />
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          onClick={() => navigate('/user/projects')}
-                        >
-                          View Details
-                        </Button>
-                      </ListItem>
+                          </Box>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Chip
+                              label={project.status?.replace('_', ' ').toUpperCase()}
+                              size="small"
+                              sx={{
+                                bgcolor: project.status === 'approved' ? '#dcfce7' : 
+                                        project.status === 'pending_verification' ? '#fef3c7' : '#fee2e2',
+                                color: project.status === 'approved' ? '#166534' : 
+                                       project.status === 'pending_verification' ? '#92400e' : '#dc2626',
+                                fontWeight: 600,
+                                fontSize: '11px'
+                              }}
+                            />
+                            {project.verification_score && (
+                              <Chip
+                                label={`AI: ${project.verification_score}/100`}
+                                size="small"
+                                sx={{
+                                  bgcolor: '#f1f5f9',
+                                  color: '#64748b',
+                                  fontWeight: 600,
+                                  fontSize: '11px'
+                                }}
+                              />
+                            )}
+                          </Box>
+                        </Box>
+                      </Box>
                     ))}
-                  </List>
+                  </Box>
                 )}
               </CardContent>
             </Card>
@@ -352,33 +597,65 @@ const UserDashboard = () => {
 
           {/* Recent Activity */}
           <Grid item xs={12} md={4}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  🔔 Recent Activity
+            <Card sx={{ 
+              bgcolor: 'white',
+              borderRadius: '16px',
+              border: '1px solid #e2e8f0',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+              mb: 3
+            }}>
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h6" sx={{ color: '#1e293b', fontWeight: 700, mb: 3 }}>
+                  Recent Activity
                 </Typography>
                 
-                <List dense>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   {recentActivities.map((activity, index) => (
-                    <ListItem key={index}>
-                      <ListItemIcon>
+                    <Box 
+                      key={index}
+                      sx={{ 
+                        display: 'flex', 
+                        alignItems: 'flex-start', 
+                        gap: 2,
+                        p: 2,
+                        borderRadius: '10px',
+                        '&:hover': { bgcolor: '#f8fafc' }
+                      }}
+                    >
+                      <Box sx={{ 
+                        bgcolor: '#f1f5f9',
+                        borderRadius: '8px',
+                        p: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}>
                         {activity.icon}
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={activity.text}
-                        secondary={activity.time}
-                      />
-                    </ListItem>
+                      </Box>
+                      <Box sx={{ flex: 1 }}>
+                        <Typography variant="body2" sx={{ color: '#1e293b', fontWeight: 500 }}>
+                          {activity.text}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#64748b' }}>
+                          {activity.time}
+                        </Typography>
+                      </Box>
+                    </Box>
                   ))}
-                </List>
+                </Box>
               </CardContent>
             </Card>
 
             {/* Quick Actions */}
-            <Card sx={{ mt: 2 }}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  🚀 Quick Actions
+            <Card sx={{ 
+              bgcolor: 'white',
+              borderRadius: '16px',
+              border: '1px solid #e2e8f0',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.08)'
+            }}>
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h6" sx={{ color: '#1e293b', fontWeight: 700, mb: 3 }}>
+                  Quick Actions
                 </Typography>
                 
                 <Button

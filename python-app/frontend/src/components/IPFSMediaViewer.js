@@ -49,7 +49,7 @@ const IPFSMediaViewer = ({ open, onClose, projectId, projectName }) => {
     setError(null);
     
     try {
-      const response = await fetch(`http://localhost:8002/api/ipfs/files/${projectId}`);
+      const response = await fetch(`https://python-backend-dqu4.onrender.com/api/ipfs/files/${projectId}`);
       const data = await response.json();
       
       if (data.status === 'success') {

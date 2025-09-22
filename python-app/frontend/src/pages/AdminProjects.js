@@ -79,7 +79,7 @@ const AdminProjects = () => {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch('http://localhost:8002/api/projects');
+      const response = await fetch('https://python-backend-dqu4.onrender.com/api/projects');
       const data = await response.json();
       
       if (data.status === 'success') {
@@ -121,7 +121,7 @@ const AdminProjects = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:8002/api/admin/projects/${selectedProject.id}/review`, {
+      const response = await fetch(`https://python-backend-dqu4.onrender.com/api/admin/projects/${selectedProject.id}/review`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

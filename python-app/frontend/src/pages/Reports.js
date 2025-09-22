@@ -61,7 +61,7 @@ const Reports = () => {
   const fetchReportData = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8002/api/reports');
+      const response = await fetch('https://python-backend-dqu4.onrender.com/api/reports');
       const data = await response.json();
       
       setReportData(data.report);

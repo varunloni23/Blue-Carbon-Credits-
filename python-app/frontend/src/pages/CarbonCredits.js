@@ -93,16 +93,16 @@ const CarbonCredits = () => {
     setLoading(true);
     try {
       // Fetch blockchain status
-      const blockchainResponse = await fetch('http://localhost:8002/api/blockchain/status');
+      const blockchainResponse = await fetch('https://python-backend-dqu4.onrender.com/api/blockchain/status');
       const blockchainData = await blockchainResponse.json();
       setBlockchainStatus(blockchainData.blockchain_status);
 
       // Fetch contract info
-      const contractsResponse = await fetch('http://localhost:8002/api/contracts/info');
+      const contractsResponse = await fetch('https://python-backend-dqu4.onrender.com/api/contracts/info');
       const contractsData = await contractsResponse.json();
 
       // Fetch user projects for tokenization
-      const projectsResponse = await fetch('http://localhost:8002/api/projects');
+      const projectsResponse = await fetch('https://python-backend-dqu4.onrender.com/api/projects');
       const projectsData = await projectsResponse.json();
 
       // Mock carbon credits data
@@ -176,7 +176,7 @@ const CarbonCredits = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:8002/api/blockchain/project/${tokenizeData.project_id}/tokenize`, {
+      const response = await fetch(`https://python-backend-dqu4.onrender.com/api/blockchain/project/${tokenizeData.project_id}/tokenize`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -206,7 +206,7 @@ const CarbonCredits = () => {
 
   const handleViewBlockchainHistory = async (projectId) => {
     try {
-      const response = await fetch(`http://localhost:8002/api/blockchain/project/${projectId}/history`);
+      const response = await fetch(`https://python-backend-dqu4.onrender.com/api/blockchain/project/${projectId}/history`);
       if (response.ok) {
         const historyData = await response.json();
         setBlockchainHistory(historyData.timeline || []);

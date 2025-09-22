@@ -82,7 +82,7 @@ const NGODashboard = ({ userProfile }) => {
   const fetchPendingProjects = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8002/api/projects');
+      const response = await fetch('https://python-backend-dqu4.onrender.com/api/projects');
       const data = await response.json();
       
       if (data.status === 'success') {
@@ -92,7 +92,7 @@ const NGODashboard = ({ userProfile }) => {
         
         for (const project of data.projects) {
           try {
-            const statusResponse = await fetch(`http://localhost:8002/api/projects/${project.id}/verification-status`);
+            const statusResponse = await fetch(`https://python-backend-dqu4.onrender.com/api/projects/${project.id}/verification-status`);
             const statusData = await statusResponse.json();
             
             if (statusData.ai_verification?.passed && !statusData.third_party_verification?.completed) {
@@ -134,7 +134,7 @@ const NGODashboard = ({ userProfile }) => {
         notes: fieldData.fieldNotes
       };
 
-      const response = await fetch('http://localhost:8002/api/3rd-party/submit-report', {
+      const response = await fetch('https://python-backend-dqu4.onrender.com/api/3rd-party/submit-report', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(verificationData)
@@ -666,12 +666,12 @@ const Dashboard = () => {
       setLoading(true);
       
       // Test Python backend connection
-      const statusResponse = await fetch('http://localhost:8002/api/status');
+      const statusResponse = await fetch('https://python-backend-dqu4.onrender.com/api/status');
       if (statusResponse.ok) {
         setBackendStatus('connected');
         
         // Fetch user's projects data
-        const projectsResponse = await fetch('http://localhost:8002/api/projects');
+        const projectsResponse = await fetch('https://python-backend-dqu4.onrender.com/api/projects');
         if (projectsResponse.ok) {
           const projectsData = await projectsResponse.json();
           const projects = projectsData.projects || [];

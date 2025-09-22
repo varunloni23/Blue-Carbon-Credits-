@@ -58,7 +58,7 @@ const AdminAnalytics = () => {
 
   const fetchAnalytics = useCallback(async () => {
     try {
-      const response = await fetch('http://localhost:8002/api/admin/analytics');
+      const response = await fetch('https://python-backend-dqu4.onrender.com/api/admin/analytics');
       const data = await response.json();
       
       if (data.status === 'success') {

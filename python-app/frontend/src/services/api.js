@@ -1,7 +1,7 @@
 import axios from 'axios';
 import blockchainService from './blockchain';
 
-const API_BASE_URL = 'http://localhost:8002';
+const API_BASE_URL = 'https://python-backend-dqu4.onrender.com';
 
 // Create axios instance with default config
 const apiClient = axios.create({

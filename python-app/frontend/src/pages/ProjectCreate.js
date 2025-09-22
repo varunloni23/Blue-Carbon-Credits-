@@ -308,7 +308,7 @@ const ProjectCreate = () => {
       }));
     }
 
-    const response = await fetch('http://localhost:8002/api/ipfs/upload', {
+    const response = await fetch('https://python-backend-dqu4.onrender.com/api/ipfs/upload', {
       method: 'POST',
       body: uploadFormData,
     });

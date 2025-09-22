@@ -3,7 +3,7 @@
 Production Blue Carbon MRV System Backend
 Complete integrated server with admin dashboard functionality
 """
-import requests
+
 import json
 from decimal import Decimal
 import hashlib
@@ -80,7 +80,7 @@ PORT = 8002
 CORS_ORIGINS = ["http://localhost:3000", "http://localhost:8004", "http://localhost:8080"]
 
 # Blockchain service configuration
-BLOCKCHAIN_API_URL = "http://localhost:8001"
+BLOCKCHAIN_API_URL = "https://razapvt-1.onrender.com"
 BLOCKCHAIN_SERVICE_AVAILABLE = True
 
 def test_blockchain_connection():
@@ -91,7 +91,7 @@ def test_blockchain_connection():
     
     try:
         # Try the correct health endpoint
-        response = requests.get("http://localhost:8001/health", timeout=5)
+        response = requests.get("https://razapvt-1.onrender.com/health", timeout=5)
         BLOCKCHAIN_SERVICE_AVAILABLE = response.status_code == 200
         if BLOCKCHAIN_SERVICE_AVAILABLE:
             print("✅ Blockchain service connected")
@@ -106,7 +106,7 @@ def check_blockchain_service():
     global BLOCKCHAIN_SERVICE_AVAILABLE
     try:
         import requests
-        response = requests.get("http://localhost:8001/health", timeout=5)
+        response = requests.get("https://razapvt-1.onrender.com/health", timeout=5)
         BLOCKCHAIN_SERVICE_AVAILABLE = response.status_code == 200
         if BLOCKCHAIN_SERVICE_AVAILABLE:
             print("✅ Blockchain service available")
@@ -160,7 +160,7 @@ def register_project_on_blockchain(project_data):
         
         # Call real blockchain service on port 8003
         response = requests.post(
-            "http://localhost:8001/blockchain/register-project",
+            "https://razapvt-1.onrender.com/blockchain/register-project",
             json=blockchain_data,
             timeout=60  # Blockchain transactions can take time
         )

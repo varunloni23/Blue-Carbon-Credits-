@@ -62,14 +62,14 @@ const SimpleDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const response = await fetch('http://localhost:8002/api/projects');
+      const response = await fetch('https://python-backend-dqu4.onrender.com/api/projects');
       const data = await response.json();
       
       // Fetch detailed status for each project
       const projectsWithStatus = await Promise.all(
         (data.projects || []).map(async (project) => {
           try {
-            const statusResponse = await fetch(`http://localhost:8002/api/projects/${project.id}/verification-status`);
+            const statusResponse = await fetch(`https://python-backend-dqu4.onrender.com/api/projects/${project.id}/verification-status`);
             const statusData = await statusResponse.json();
             return {
               ...project,

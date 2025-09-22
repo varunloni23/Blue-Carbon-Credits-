@@ -61,7 +61,7 @@ const Marketplace = () => {
     const loadListings = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8002/api/marketplace');
+      const response = await fetch('https://python-backend-dqu4.onrender.com/api/marketplace');
       const result = await response.json();
       
       // Add mock data if empty
@@ -132,7 +132,7 @@ const Marketplace = () => {
         buyer_email: userInfo?.email
       };
 
-      const response = await fetch('http://localhost:8002/api/marketplace/purchase', {
+      const response = await fetch('https://python-backend-dqu4.onrender.com/api/marketplace/purchase', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -180,7 +180,7 @@ const PaymentDistribution = () => {
 
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:8002/api/payments/transfer', {
+      const response = await fetch('https://python-backend-dqu4.onrender.com/api/payments/transfer', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
