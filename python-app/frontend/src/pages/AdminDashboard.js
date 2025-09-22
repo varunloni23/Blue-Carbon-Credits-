@@ -37,7 +37,6 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemIcon,
   IconButton,
   Tooltip,
 } from '@mui/material';
@@ -51,18 +50,15 @@ import 'leaflet/dist/leaflet.css';
 import IPFSMediaViewer from '../components/IPFSMediaViewer';
 import {
   GlassmorphismCard,
-  CryptoMetricCard,
   NetworkStatusIndicator,
   WalletAddressDisplay,
   TokenMetricDisplay,
   BlockchainStatusCard,
-  CryptoIcons
 } from '../components/CryptoComponents';
 
 import {
   CheckCircle,
   Cancel,
-  Dashboard as DashboardIcon,
   VerifiedUser as VerifiedIcon,
   Warning as WarningIcon,
   CheckCircle as ApprovedIcon,
@@ -79,7 +75,6 @@ import {
   Download as DownloadIcon,
   Share as ShareIcon,
   Logout as LogoutIcon,
-  AccountBalanceWallet,
   TrendingUp,
   Speed,
   Token,
@@ -172,12 +167,13 @@ const AdminDashboard = () => {
     compliance_notes: '',
   });
 
+  // Load dashboard data on component mount
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     console.log('AdminDashboard component mounted');
     loadDashboard();
     fetchAdminData();
-  }, []);
+  }, []); // Dependencies intentionally omitted to run only on mount
 
   const loadDashboard = async () => {
     try {
