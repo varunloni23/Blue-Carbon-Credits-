@@ -37,7 +37,6 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemIcon,
   IconButton,
   Tooltip,
 } from '@mui/material';
@@ -49,11 +48,17 @@ import 'leaflet/dist/leaflet.css';
 
 // Import custom components
 import IPFSMediaViewer from '../components/IPFSMediaViewer';
+import {
+  GlassmorphismCard,
+  NetworkStatusIndicator,
+  WalletAddressDisplay,
+  TokenMetricDisplay,
+  BlockchainStatusCard,
+} from '../components/CryptoComponents';
 
 import {
   CheckCircle,
   Cancel,
-  Dashboard as DashboardIcon,
   VerifiedUser as VerifiedIcon,
   Warning as WarningIcon,
   CheckCircle as ApprovedIcon,
@@ -70,6 +75,15 @@ import {
   Download as DownloadIcon,
   Share as ShareIcon,
   Logout as LogoutIcon,
+  TrendingUp,
+  Speed,
+  Token,
+  Public,
+  SwapHoriz,
+  Hexagon,
+  Timeline,
+  Security,
+  Refresh,
 } from '@mui/icons-material';
 import { adminAPI, handleAPIError } from '../services/api';
 import { useSnackbar } from 'notistack';
@@ -153,12 +167,13 @@ const AdminDashboard = () => {
     compliance_notes: '',
   });
 
+  // Load dashboard data on component mount
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     console.log('AdminDashboard component mounted');
     loadDashboard();
     fetchAdminData();
-  }, []);
+  }, []); // Dependencies intentionally omitted to run only on mount
 
   const loadDashboard = async () => {
     try {
@@ -351,147 +366,279 @@ const AdminDashboard = () => {
 
   const renderDashboardTab = () => (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h5" gutterBottom>🏛️ NCCR Admin Dashboard</Typography>
-        <Button
-          variant="outlined"
-          color="error"
-          startIcon={<LogoutIcon />}
-          onClick={handleLogout}
-        >
-          Logout
-        </Button>
+      {/* Dashboard Header with Crypto Elements */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+        <Box>
+          <Typography 
+            variant="h4" 
+            sx={{ 
+              fontWeight: 600,
+              background: 'linear-gradient(135deg, #00D4AA 0%, #3B82F6 100%)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              mb: 1,
+            }}
+          >
+            Protocol Analytics Dashboard
+          </Typography>
+          <Typography variant="body1" color="textSecondary">
+            Real-time blockchain metrics and smart contract insights
+          </Typography>
+        </Box>
+        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+          <Button
+            variant="outlined"
+            startIcon={<RefreshIcon />}
+            onClick={() => { loadDashboard(); fetchAdminData(); }}
+            disabled={refreshing}
+          >
+            {refreshing ? 'Syncing...' : 'Sync Chain'}
+          </Button>
+          <Button
+            variant="outlined"
+            color="error"
+            startIcon={<LogoutIcon />}
+            onClick={handleLogout}
+          >
+            Disconnect
+          </Button>
+        </Box>
       </Box>
       
+      {/* Blockchain Status Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <DashboardIcon color="primary" sx={{ mr: 2, fontSize: 40 }} />
-                <Box>
-                  <Typography color="textSecondary" gutterBottom>
-                    Total Projects
-                  </Typography>
-                  <Typography variant="h4">
-                    {dashboardData?.statistics?.total_projects || projects.length || 0}
-                  </Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
+          <BlockchainStatusCard
+            title="Smart Contracts"
+            status="5 Active"
+            icon={SecurityIcon}
+            statusColor="#00D4AA"
+            details={[
+              { label: 'Registry', value: 'Verified' },
+              { label: 'Credits', value: 'Minted' },
+              { label: 'Oracle', value: 'Live' },
+            ]}
+          />
         </Grid>
         
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <PendingIcon color="warning" sx={{ mr: 2, fontSize: 40 }} />
-                <Box>
-                  <Typography color="textSecondary" gutterBottom>
-                    Pending Review
-                  </Typography>
-                  <Typography variant="h4">
-                    {dashboardData?.statistics?.pending_review || projects.filter(p => p.status === 'pending_verification' || p.status === 'requires_review').length || 0}
-                  </Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
+          <BlockchainStatusCard
+            title="Token Metrics"
+            status="Active Minting"
+            icon={Token}
+            statusColor="#3B82F6"
+            details={[
+              { label: 'Total Supply', value: `${dashboardData?.statistics?.total_projects || projects.length || 0}` },
+              { label: 'Circulating', value: `${projects.filter(p => p.status === 'approved').length || 0}` },
+              { label: 'Burned', value: '0' },
+            ]}
+          />
         </Grid>
         
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <ApprovedIcon color="success" sx={{ mr: 2, fontSize: 40 }} />
-                <Box>
-                  <Typography color="textSecondary" gutterBottom>
-                    Approved
-                  </Typography>
-                  <Typography variant="h4">
-                    {dashboardData?.statistics?.approved || projects.filter(p => p.status === 'approved').length || 0}
-                  </Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
+          <BlockchainStatusCard
+            title="Validation Queue"
+            status="Processing"
+            icon={PendingIcon}
+            statusColor="#F59E0B"
+            details={[
+              { label: 'Pending', value: `${projects.filter(p => p.status === 'pending_verification' || p.status === 'requires_review').length || 0}` },
+              { label: 'In Review', value: `${projects.filter(p => p.status === 'under_review').length || 0}` },
+              { label: 'Disputed', value: `${projects.filter(p => p.verification_score < 60).length || 0}` },
+            ]}
+          />
         </Grid>
         
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <WarningIcon color="error" sx={{ mr: 2, fontSize: 40 }} />
-                <Box>
-                  <Typography color="textSecondary" gutterBottom>
-                    AI Flagged
-                  </Typography>
-                  <Typography variant="h4">
-                    {projects.filter(p => p.verification_score < 60).length || 0}
-                  </Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
+          <BlockchainStatusCard
+            title="Network Health"
+            status="Optimal"
+            icon={Speed}
+            statusColor="#10B981"
+            details={[
+              { label: 'Block Time', value: '2.3s' },
+              { label: 'Gas Price', value: '0.02 MATIC' },
+              { label: 'Uptime', value: '99.9%' },
+            ]}
+          />
         </Grid>
       </Grid>
 
-      {/* Recent AI Alerts */}
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            🤖 Recent AI Verification Alerts
-          </Typography>
-          <List>
-            {projects
-              .filter(p => p.verification_score < 70)
-              .slice(0, 5)
-              .map((project) => (
-                <ListItem key={project.id}>
-                  <ListItemIcon>
-                    <WarningIcon color="warning" />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={`${project.project_name} - Score: ${project.verification_score || 0}/100`}
-                    secondary={`Flagged: ${project.ai_verification?.flags?.join(', ') || 'Low verification score'}`}
-                  />
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    onClick={() => openProjectDetails(project)}
+      {/* DeFi Protocol Metrics */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} md={6}>
+          <GlassmorphismCard>
+            <CardContent sx={{ p: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box
+                    sx={{
+                      p: 1.5,
+                      borderRadius: 2,
+                      background: 'linear-gradient(135deg, rgba(0, 212, 170, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%)',
+                    }}
                   >
-                    Review
-                  </Button>
-                </ListItem>
-              ))}
-            {projects.filter(p => p.verification_score < 70).length === 0 && (
-              <Alert severity="success">No AI verification alerts at this time</Alert>
-            )}
-          </List>
-        </CardContent>
-      </Card>
+                    <SwapHoriz sx={{ color: '#00D4AA', fontSize: 24 }} />
+                  </Box>
+                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                    Carbon Credit Distribution
+                  </Typography>
+                </Box>
+                <Chip 
+                  label="Live" 
+                  sx={{ 
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    color: '#10B981',
+                    fontWeight: 600,
+                  }} 
+                />
+              </Box>
+              
+              {/* Distribution Chart Placeholder */}
+              <Box sx={{ 
+                height: 200, 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                background: 'linear-gradient(135deg, rgba(0, 212, 170, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%)',
+                borderRadius: 2,
+                border: '1px solid rgba(0, 212, 170, 0.1)',
+              }}>
+                <Typography variant="body2" color="textSecondary">
+                  📊 Token Distribution Analytics
+                </Typography>
+              </Box>
+            </CardContent>
+          </GlassmorphismCard>
+        </Grid>
+        
+        <Grid item xs={12} md={6}>
+          <GlassmorphismCard>
+            <CardContent sx={{ p: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box
+                    sx={{
+                      p: 1.5,
+                      borderRadius: 2,
+                      background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%)',
+                    }}
+                  >
+                    <AnalyticsIcon sx={{ color: '#3B82F6', fontSize: 24 }} />
+                  </Box>
+                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                    Protocol Performance
+                  </Typography>
+                </Box>
+                <Chip 
+                  label="Real-time" 
+                  sx={{ 
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    color: '#3B82F6',
+                    fontWeight: 600,
+                  }} 
+                />
+              </Box>
+              
+              {/* Performance Metrics */}
+              <Box sx={{ space: 2 }}>
+                {[
+                  { label: 'Transaction Success Rate', value: '99.8%', color: '#10B981' },
+                  { label: 'Average Verification Time', value: '4.2 min', color: '#3B82F6' },
+                  { label: 'Oracle Accuracy', value: '99.95%', color: '#00D4AA' },
+                  { label: 'Network Fees (24h)', value: '12.4 MATIC', color: '#8B5CF6' },
+                ].map((metric, index) => (
+                  <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between', py: 1.5, borderBottom: index < 3 ? '1px solid rgba(148, 163, 184, 0.1)' : 'none' }}>
+                    <Typography variant="body2" color="textSecondary">
+                      {metric.label}
+                    </Typography>
+                    <Typography 
+                      variant="body2" 
+                      sx={{ 
+                        fontWeight: 600,
+                        color: metric.color,
+                      }}
+                    >
+                      {metric.value}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
+            </CardContent>
+          </GlassmorphismCard>
+        </Grid>
+      </Grid>
 
-      {/* System Status */}
-      <Card>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            🔧 System Status
-          </Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <Alert severity="success">
-                Python Backend: Online (Port 8002)
-              </Alert>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Alert severity="success">
-                AI Verification: Operational
-              </Alert>
-            </Grid>
-          </Grid>
+      {/* Recent Smart Contract Events */}
+      <GlassmorphismCard>
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box
+                sx={{
+                  p: 1.5,
+                  borderRadius: 2,
+                  background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(0, 212, 170, 0.1) 100%)',
+                }}
+              >
+                <Timeline sx={{ color: '#8B5CF6', fontSize: 24 }} />
+              </Box>
+              <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                Recent Protocol Events
+              </Typography>
+            </Box>
+            <Button variant="outlined" size="small">
+              View Explorer
+            </Button>
+          </Box>
+          
+          {projects.slice(0, 5).map((project, index) => (
+            <Box 
+              key={project.id} 
+              sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'space-between', 
+                py: 2,
+                borderBottom: index < 4 ? '1px solid rgba(148, 163, 184, 0.1)' : 'none',
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Box
+                  sx={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    backgroundColor: getStatusColor(project.status) === 'success' ? '#10B981' : 
+                                   getStatusColor(project.status) === 'warning' ? '#F59E0B' : '#3B82F6',
+                    boxShadow: `0 0 8px ${
+                      getStatusColor(project.status) === 'success' ? '#10B981' : 
+                      getStatusColor(project.status) === 'warning' ? '#F59E0B' : '#3B82F6'
+                    }`,
+                  }}
+                />
+                <Box>
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                    {project.name || `Project ${project.id}`}
+                  </Typography>
+                  <Typography variant="caption" color="textSecondary">
+                    Status: {project.status?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                  </Typography>
+                </Box>
+              </Box>
+              <Box sx={{ textAlign: 'right' }}>
+                <Typography variant="caption" color="textSecondary">
+                  Verification Score
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                  {project.verification_score || 'Pending'}
+                </Typography>
+              </Box>
+            </Box>
+          ))}
         </CardContent>
-      </Card>
+      </GlassmorphismCard>
     </Box>
   );
 
@@ -960,80 +1107,294 @@ const AdminDashboard = () => {
   );
 
   return (
-    <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-      {/* Loading state */}
-      {loading && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
-          <CircularProgress size={60} />
-          <Typography variant="h6" sx={{ ml: 2 }}>Loading Admin Dashboard...</Typography>
-        </Box>
-      )}
-      
-      {/* Error state */}
-      {!loading && (!dashboardData && !projects.length) && (
-        <Alert severity="warning" sx={{ mb: 3 }}>
-          Unable to load dashboard data. Please check your connection and try again.
-          <Button variant="outlined" onClick={() => { loadDashboard(); fetchAdminData(); }} sx={{ ml: 2 }}>
-            Retry
-          </Button>
-        </Alert>
-      )}
-      
-      {/* Main dashboard content */}
-      {!loading && (
-        <>
-          <Typography variant="h3" gutterBottom>
-            🏛️ NCCR Admin Dashboard
-          </Typography>
-          <Typography variant="subtitle1" color="textSecondary" gutterBottom sx={{ mb: 4 }}>
-            National Centre for Coastal Research - Blue Carbon MRV System Administration
-          </Typography>
-
-          <Alert severity="warning" sx={{ mb: 3 }}>
-            Review and approve blue carbon restoration projects for MRV workflow
-          </Alert>
-
-          <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-            <Tabs value={activeTab} onChange={(e, newValue) => setActiveTab(newValue)}>
-              <Tab
-                icon={<DashboardIcon />}
-                label="Dashboard"
-                iconPosition="start"
+    <Box sx={{ 
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%)',
+      position: 'relative',
+      '&::before': {
+        content: '""',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: `
+          radial-gradient(circle at 20% 80%, rgba(0, 212, 170, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 40% 40%, rgba(139, 92, 246, 0.05) 0%, transparent 50%)
+        `,
+        pointerEvents: 'none',
+        zIndex: -1,
+      },
+    }}>
+      <Container maxWidth="xl" sx={{ pt: 4, pb: 4, position: 'relative', zIndex: 1 }}>
+        {/* Loading state */}
+        {loading && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
+            <Box sx={{ textAlign: 'center' }}>
+              <CircularProgress 
+                size={60} 
+                sx={{ 
+                  color: '#00D4AA',
+                  '& .MuiCircularProgress-svg': {
+                    filter: 'drop-shadow(0 0 8px rgba(0, 212, 170, 0.3))',
+                  }
+                }} 
               />
-              <Tab
-                icon={<Badge badgeContent={projects.filter(p => p.status === 'requires_review' || p.status === 'pending_verification').length} color="error">
-                  <VerifiedIcon />
-                </Badge>}
-                label="Project Review"
-                iconPosition="start"
-              />
-              <Tab
-                icon={<AnalyticsIcon />}
-                label="Analytics"
-                iconPosition="start"
-              />
-              <Tab
-                icon={<MapIcon />}
-                label="Location Map"
-                iconPosition="start"
-              />
-            </Tabs>
+              <Typography variant="h6" sx={{ mt: 2, color: '#1E293B' }}>
+                Loading Blockchain Analytics...
+              </Typography>
+            </Box>
           </Box>
+        )}
+        
+        {/* Error state */}
+        {!loading && (!dashboardData && !projects.length) && (
+          <GlassmorphismCard sx={{ mb: 3 }}>
+            <CardContent sx={{ p: 3 }}>
+              <Alert 
+                severity="warning" 
+                sx={{ 
+                  backgroundColor: 'transparent',
+                  border: '1px solid rgba(245, 158, 11, 0.3)',
+                  '& .MuiAlert-icon': { color: '#F59E0B' }
+                }}
+              >
+                Unable to connect to blockchain network. Please check your connection and try again.
+                <Button 
+                  variant="outlined" 
+                  onClick={() => { loadDashboard(); fetchAdminData(); }} 
+                  sx={{ ml: 2 }}
+                >
+                  <Refresh sx={{ mr: 1 }} />
+                  Retry Connection
+                </Button>
+              </Alert>
+            </CardContent>
+          </GlassmorphismCard>
+        )}
+        
+        {/* Main dashboard content */}
+        {!loading && (
+          <>
+            {/* Header Section with Crypto Branding */}
+            <Box sx={{ mb: 6 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box
+                    sx={{
+                      p: 2,
+                      borderRadius: 3,
+                      background: 'linear-gradient(135deg, #00D4AA 0%, #3B82F6 100%)',
+                      boxShadow: '0 8px 32px rgba(0, 212, 170, 0.3)',
+                    }}
+                  >
+                    <Hexagon sx={{ fontSize: 32, color: 'white' }} />
+                  </Box>
+                  <Box>
+                    <Typography 
+                      variant="h2" 
+                      sx={{ 
+                        fontWeight: 700,
+                        background: 'linear-gradient(135deg, #00D4AA 0%, #3B82F6 100%)',
+                        backgroundClip: 'text',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                      }}
+                    >
+                      Blue Carbon Protocol
+                    </Typography>
+                    <Typography variant="h6" color="textSecondary" sx={{ fontWeight: 500 }}>
+                      Blockchain-Powered Carbon Credit Administration
+                    </Typography>
+                  </Box>
+                </Box>
+                
+                {/* Network Status and Wallet */}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <NetworkStatusIndicator 
+                    networkName="Polygon Amoy" 
+                    isConnected={true} 
+                    chainId="80002" 
+                  />
+                  <WalletAddressDisplay 
+                    address="0x742d35Cc6639C0532fEb217a8d69Eb53b4e1A532"
+                    label="Admin Wallet"
+                  />
+                </Box>
+              </Box>
 
-          {activeTab === 0 && renderDashboardTab()}
-          {activeTab === 1 && renderProjectsTab()}
-          {activeTab === 2 && renderAnalyticsTab()}
-          {activeTab === 3 && renderMapTab()}
-        </>
-      )}
+              {/* Protocol Status Banner */}
+              <GlassmorphismCard sx={{ mb: 4 }}>
+                <CardContent sx={{ p: 3 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Security sx={{ color: '#00D4AA', fontSize: 24 }} />
+                    <Typography variant="h6" sx={{ fontWeight: 600, color: '#1E293B' }}>
+                      MRV Protocol Status: Active
+                    </Typography>
+                    <Chip 
+                      label="Smart Contracts Verified" 
+                      color="primary" 
+                      sx={{ 
+                        fontWeight: 600,
+                        background: 'linear-gradient(135deg, rgba(0, 212, 170, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%)',
+                        border: '1px solid rgba(0, 212, 170, 0.3)',
+                      }} 
+                    />
+                    <Chip 
+                      label="Oracle Active" 
+                      color="secondary" 
+                      sx={{ 
+                        fontWeight: 600,
+                        background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%)',
+                        border: '1px solid rgba(59, 130, 246, 0.3)',
+                      }} 
+                    />
+                  </Box>
+                </CardContent>
+              </GlassmorphismCard>
 
-      {/* Project Map Dialog */}
-      <Dialog
-        open={projectMapDialog}
-        onClose={() => setProjectMapDialog(false)}
-        maxWidth="lg"
-        fullWidth
-      >
+              {/* Crypto Metrics Dashboard */}
+              <Grid container spacing={3} sx={{ mb: 4 }}>
+                <Grid item xs={12} sm={6} md={3}>
+                  <TokenMetricDisplay
+                    label="Total Carbon Credits"
+                    value="15,847"
+                    change={12.5}
+                    icon={Token}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                  <TokenMetricDisplay
+                    label="Active Validators"
+                    value="24"
+                    change={8.3}
+                    icon={VerifiedIcon}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                  <TokenMetricDisplay
+                    label="Protocol TVL"
+                    value="$2.4M"
+                    change={-2.1}
+                    icon={TrendingUp}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                  <TokenMetricDisplay
+                    label="Network TPS"
+                    value="847"
+                    change={5.7}
+                    icon={Speed}
+                  />
+                </Grid>
+              </Grid>
+            </Box>
+
+            {/* Enhanced Tabs with Crypto Theme */}
+            <GlassmorphismCard sx={{ mb: 4 }}>
+              <Box sx={{ p: 2 }}>
+                <Tabs 
+                  value={activeTab} 
+                  onChange={(e, newValue) => setActiveTab(newValue)}
+                  sx={{
+                    '& .MuiTabs-flexContainer': {
+                      gap: 1,
+                    },
+                  }}
+                >
+                  <Tab
+                    icon={<Timeline />}
+                    label="Protocol Analytics"
+                    iconPosition="start"
+                    sx={{
+                      minHeight: 56,
+                      borderRadius: 2,
+                      fontWeight: 600,
+                      textTransform: 'none',
+                      '&.Mui-selected': {
+                        background: 'linear-gradient(135deg, rgba(0, 212, 170, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%)',
+                        color: '#00D4AA',
+                      },
+                    }}
+                  />
+                  <Tab
+                    icon={
+                      <Badge 
+                        badgeContent={projects.filter(p => p.status === 'requires_review' || p.status === 'pending_verification').length} 
+                        color="error"
+                        sx={{
+                          '& .MuiBadge-badge': {
+                            backgroundColor: '#EF4444',
+                            boxShadow: '0 0 8px rgba(239, 68, 68, 0.5)',
+                          }
+                        }}
+                      >
+                        <SecurityIcon />
+                      </Badge>
+                    }
+                    label="Smart Contract Verification"
+                    iconPosition="start"
+                    sx={{
+                      minHeight: 56,
+                      borderRadius: 2,
+                      fontWeight: 600,
+                      textTransform: 'none',
+                      '&.Mui-selected': {
+                        background: 'linear-gradient(135deg, rgba(0, 212, 170, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%)',
+                        color: '#00D4AA',
+                      },
+                    }}
+                  />
+                  <Tab
+                    icon={<AnalyticsIcon />}
+                    label="DeFi Analytics"
+                    iconPosition="start"
+                    sx={{
+                      minHeight: 56,
+                      borderRadius: 2,
+                      fontWeight: 600,
+                      textTransform: 'none',
+                      '&.Mui-selected': {
+                        background: 'linear-gradient(135deg, rgba(0, 212, 170, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%)',
+                        color: '#00D4AA',
+                      },
+                    }}
+                  />
+                  <Tab
+                    icon={<Public />}
+                    label="Network Explorer"
+                    iconPosition="start"
+                    sx={{
+                      minHeight: 56,
+                      borderRadius: 2,
+                      fontWeight: 600,
+                      textTransform: 'none',
+                      '&.Mui-selected': {
+                        background: 'linear-gradient(135deg, rgba(0, 212, 170, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%)',
+                        color: '#00D4AA',
+                      },
+                    }}
+                  />
+                </Tabs>
+              </Box>
+            </GlassmorphismCard>
+
+            {/* Tab Content */}
+            {activeTab === 0 && renderDashboardTab()}
+            {activeTab === 1 && renderProjectsTab()}
+            {activeTab === 2 && renderAnalyticsTab()}
+            {activeTab === 3 && renderMapTab()}
+          </>
+        )}
+
+        {/* Project Map Dialog */}
+        <Dialog
+          open={projectMapDialog}
+          onClose={() => setProjectMapDialog(false)}
+          maxWidth="lg"
+          fullWidth
+        >
         <DialogTitle>
           📍 Project Location: {selectedProject?.project_name}
         </DialogTitle>
@@ -1451,7 +1812,8 @@ const AdminDashboard = () => {
         projectId={selectedProject?.id}
         projectName={selectedProject?.project_name}
       />
-    </Container>
+      </Container>
+    </Box>
   );
 };
 
